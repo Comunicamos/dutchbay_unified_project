@@ -12,3 +12,17 @@ dev = [
 [build-system]
 requires = ["setuptools","wheel"]
 build-backend = "setuptools.build_meta"
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# explicit discovery (avoid legacy auto-discovery picking up "inputs/")
+packages = { find = { where = ["."],
+                      include = ["dutchbay_v13", "dutchbay_v13.*"],
+                      exclude = ["tests*", "docs*", "inputs*", "outputs*", "scripts*", ".github*"] } }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dutchbay_v13", "dutchbay_v13.*"]
+exclude = ["tests*", "docs*", "inputs*", "outputs*", "scripts*", ".github*"]
