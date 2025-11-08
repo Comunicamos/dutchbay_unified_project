@@ -9,17 +9,16 @@ web = ["fastapi>=0.110","uvicorn>=0.23"]
 pdf = ["reportlab>=3.6","weasyprint>=60.0"]
 dev = [
   "hypothesis>=6.0","pytest","pytest-cov","flake8","black","mypy","isort"]
-[build-system]
-requires = ["setuptools","wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-# explicit discovery (avoid legacy auto-discovery picking up "inputs/")
-packages = { find = { where = ["."],
-                      include = ["dutchbay_v13", "dutchbay_v13.*"],
-                      exclude = ["tests*", "docs*", "inputs*", "outputs*", "scripts*", ".github*"] } }
-
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["dutchbay_v13", "dutchbay_v13.*"]
 exclude = ["tests*", "docs*", "inputs*", "outputs*", "scripts*", ".github*"]
+
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# tell setuptools only to package the code package, not data dirs like inputs/
+[tool.setuptools]
+packages = ["dutchbay_v13"]
