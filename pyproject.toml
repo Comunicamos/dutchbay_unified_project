@@ -1,49 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "dutchbay-v13"
 version = "0.1.0"
-description = "Dutch Bay Wind Farm model, V13 modular rebuild (generated)"
+description = "Dutch Bay financial model toolkit"
+readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy","pandas","scipy","pyyaml","pydantic"]
+license = { text = "Proprietary" }
+authors = [{ name = "Dutch Bay" }]
+
+# Runtime deps only; keep heavy tools in dev extra
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "pyyaml>=6.0",
+]
+
 [project.optional-dependencies]
-web = ["fastapi>=0.110","uvicorn>=0.23"]
-pdf = ["reportlab>=3.6","weasyprint>=60.0"]
 dev = [
-  "hypothesis>=6.0","pytest","pytest-cov","flake8","black","mypy","isort"]
+  # testing
+  "pytest>=7.0",
+  "pytest-cov>=4.0",
+  "hypothesis>=6.0",
 
-# 1) Rewrite pyproject packaging to a safe minimal form
-python - <<'PY'
-from pathlib import Path
-import re
+  # typing/lint/format (pinned for reproducibility)
+  "mypy>=1.5",
+  "flake8==7.1.0",
+  "flake8-bugbear==24.2.8",
+  "flake8-comprehensions==3.14.0",
+  "flake8-pie==0.16.0",
+  "black==24.8.0",
+  "isort==5.13.2",
+  "pre-commit>=3.5",
+  "types-PyYAML>=6.0",
 
-p = Path("pyproject.toml")
-s = p.read_text(encoding="utf-8")
+  # optional web/report stack used by API/report modes
+  "fastapi>=0.115",
+  "uvicorn>=0.30",
+  "pydantic>=2.7",
+  "PyJWT>=2.8",
+  "typer>=0.12",
+  "reportlab>=4.0",
+  # WeasyPrint isn’t supported on Windows runners; keep optional
+  "weasyprint>=60.0; platform_system!='Windows'",
+]
 
-# Ensure build-system block
-if "[build-system]" not in s:
-    s += '\n[build-system]\nrequires = ["setuptools>=68", "wheel"]\nbuild-backend = "setuptools.build_meta"\n'
-else:
-    s = re.sub(r'(\[build-system\][^\[]*requires\s*=\s*\[)[^\]]*(\])',
-               r'\1"setuptools>=68", "wheel"\2', s, flags=re.S)
-    if "build-backend" not in s:
-        s = s.replace("[build-system]", '[build-system]\nbuild-backend = "setuptools.build_meta"')
+[tool.setuptools]
+# Explicit! Avoid auto-discovery picking up data dirs like inputs/
+packages = ["dutchbay_v13"]
 
-# Remove any setuptools “find” blocks and inline tables that caused TOML conflicts
-s = re.sub(r'\[tool\.setuptools\.packages\.find\][^\[]*', '', s, flags=re.S)
-s = re.sub(r'\[tool\.setuptools\][^\[]*', '', s, flags=re.S)
-
-# Write a single setuptools block with explicit packages
-s += (
-    '\n[tool.setuptools]\n'
-    'packages = ["dutchbay_v13"]\n'
-)
-
-p.write_text(s, encoding="utf-8")
-print("pyproject.toml packaging normalized.")
-PY
-
-# 2) Kill accidental package marker under inputs/ if present
-rm -f inputs/__init__.py
-
-git add pyproject.toml inputs/__init__.py
-git commit -m "packaging: explicit setuptools packages=['dutchbay_v13']; exclude inputs/"
-git push
+# If you ship templates/static files, uncomment and adapt:
+# [tool.setuptools.package-data]
+# "dutchbay_v13" = ["templates/**/*", "static/**/*"]
