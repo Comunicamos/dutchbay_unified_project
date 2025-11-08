@@ -5,7 +5,7 @@ import pytest
 
 # Mark this golden test as xfail until you fill the expected numbers in the YAML.
 # Remove the xfail marker once aligned with the lender pack.
-pytestmark = pytest.mark.xfail(reason="Fill expected metrics in dutchbay_lendercase_2025Q4.yaml and remove xfail.", strict=False)
+# pytestmark = pytest.mark.xfail(reason="Fill expected metrics in dutchbay_lendercase_2025Q4.yaml and remove xfail.", strict=False)
 
 def load_yaml(path: str):
     with open(path, "r", encoding="utf-8") as f:
