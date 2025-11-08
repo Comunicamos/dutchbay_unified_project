@@ -1,8 +1,8 @@
 # Fill with lender case inputs. Units should match schema.md. Ranges are validated by the app.
-tariff_usd_per_kwh: 0.0000
-fx_usd_lkr: 0.00
-capex_total_usd: 0.0
-opex_annual_usd: 0.0
+tariff_usd_per_kwh: 0.0668
+fx_usd_lkr: 300.00
+capex_total_usd: 155000000.0
+opex_annual_usd: 1500000
 capacity_mw: 0.0
 degradation_pct: 0.0
 inflation_pct: 0.0
