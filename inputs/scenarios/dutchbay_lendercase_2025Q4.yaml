@@ -3,27 +3,27 @@ tariff_usd_per_kwh: 0.0668
 fx_usd_lkr: 300.00
 capex_total_usd: 155000000.0
 opex_annual_usd: 1500000
-capacity_mw: 0.0
-degradation_pct: 0.0
-inflation_pct: 0.0
-corp_tax_rate_pct: 0.0
-wacc_pct: 0.0
+capacity_mw: 150.0
+degradation_pct: 0.003
+inflation_pct: 0.06
+corp_tax_rate_pct: 0.30
+wacc_pct: 0.07
 
 debt:
-  debt_ratio: 0.0
-  tenor_years: 0
-  grace_years: 0
-  base_rate_pct: 0.0
-  margin_pct: 0.0
-  upfront_fee_pct: 0.0
-  commitment_fee_pct: 0.0
-  sculpting: "flat"   # or "dscr"
+  debt_ratio: 0.70
+  tenor_years: 22
+  grace_years: 1
+  base_rate_pct: 0.07
+  margin_pct: 0.0015
+  upfront_fee_pct: 0.0001
+  commitment_fee_pct: 0.0001
+  sculpting: "dscr"   # or "flat"
 
 # Expected outputs to lock the model to lender numbers.
 # Remove xfail in tests/test_regression_golden.py after filling these.
 expected_metrics:
-  project_irr: null
-  equity_irr: null
-  min_dscr: null
+  project_irr: 0.11
+  equity_irr: 0.15
+  min_dscr: 1.25
   llcr: null
   plcr: null
