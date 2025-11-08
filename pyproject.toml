@@ -9,10 +9,41 @@ web = ["fastapi>=0.110","uvicorn>=0.23"]
 pdf = ["reportlab>=3.6","weasyprint>=60.0"]
 dev = [
   "hypothesis>=6.0","pytest","pytest-cov","flake8","black","mypy","isort"]
-[build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
 
-# Only package the code, not inputs/tests/docs/etc.
-[tool.setuptools]
-packages = ["dutchbay_v13"]
+# 1) Rewrite pyproject packaging to a safe minimal form
+python - <<'PY'
+from pathlib import Path
+import re
+
+p = Path("pyproject.toml")
+s = p.read_text(encoding="utf-8")
+
+# Ensure build-system block
+if "[build-system]" not in s:
+    s += '\n[build-system]\nrequires = ["setuptools>=68", "wheel"]\nbuild-backend = "setuptools.build_meta"\n'
+else:
+    s = re.sub(r'(\[build-system\][^\[]*requires\s*=\s*\[)[^\]]*(\])',
+               r'\1"setuptools>=68", "wheel"\2', s, flags=re.S)
+    if "build-backend" not in s:
+        s = s.replace("[build-system]", '[build-system]\nbuild-backend = "setuptools.build_meta"')
+
+# Remove any setuptools “find” blocks and inline tables that caused TOML conflicts
+s = re.sub(r'\[tool\.setuptools\.packages\.find\][^\[]*', '', s, flags=re.S)
+s = re.sub(r'\[tool\.setuptools\][^\[]*', '', s, flags=re.S)
+
+# Write a single setuptools block with explicit packages
+s += (
+    '\n[tool.setuptools]\n'
+    'packages = ["dutchbay_v13"]\n'
+)
+
+p.write_text(s, encoding="utf-8")
+print("pyproject.toml packaging normalized.")
+PY
+
+# 2) Kill accidental package marker under inputs/ if present
+rm -f inputs/__init__.py
+
+git add pyproject.toml inputs/__init__.py
+git commit -m "packaging: explicit setuptools packages=['dutchbay_v13']; exclude inputs/"
+git push
